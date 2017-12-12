@@ -44,16 +44,23 @@ Ofcourse, this is not human-readable because of console-json combo we are using 
 ![seq](https://user-images.githubusercontent.com/13316248/33915241-93ec42d6-dfa2-11e7-8ac8-bd4fc55d85d5.png)
 
 Also notice how the two logs are correlated using `RequestId` property. This is how you find logs coming from a single request. To enable this correlation, you _cannot_ use the globally shared `ILogger` (i.e. from Log.*Something*) because you want to use a logger bound to the request context: Nancy.Serilog provides an extension method `CreateLogger()` you can call from your `NancyModule` like this:
+
 ```cs
-public class Users : NancyModule 
+Post["/hello/{user}"] = args =>
 {
-    public Users()
+    var logger = this.CreateLogger();
+    var user = (string)args.user;
+    if (arg == "error")
     {
-        Post["/create"] = args => 
-        {
-            var logger = this.CreateLogger();
-            logger.Information("Creating user");
-        }
+        logger.Warning("Looks like an error is heading your way");
+        throw new Exception("No way!");
     }
-} 
+
+    logger.Information("{User} Logged In", user);
+    return $"Hello {user}";
+};
 ```
+
+Then `POST`ing some data from Postman will give us the following: 
+
+![post](https://user-images.githubusercontent.com/13316248/33915879-287f96ac-dfa6-11e7-9d59-d176909f9a1f.png)

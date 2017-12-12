@@ -20,19 +20,15 @@ namespace SelfhostedSample
             Post["/hello/{user}"] = args =>
             {
                 var logger = this.CreateLogger();
-
-                logger.Information("I am just letting you know that you might hit an error...");
-
-                var arg = (string)args.user;
-                if (arg == "error")
+                var user = (string)args.user;
+                if (user == "error")
                 {
                     logger.Warning("Looks like an error is heading your way");
                     throw new Exception("No way!");
                 }
 
-                logger.Information("{User} Logged In", arg);
-
-                return $"Hello {arg}";
+                logger.Information("{User} Logged In", user);
+                return $"Hello {user}";
             };
         }
     }
