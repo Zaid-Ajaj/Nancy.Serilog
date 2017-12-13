@@ -11,7 +11,7 @@ Install-Package Nancy.Serilog
 Enable logging from your Bootstrapper at `ApplicationStartup`, this block is a good place to configure actual logger. 
 ```cs
 using Nancy.Serilog;
-...
+// ...
 class CustomBootstrapper : DefaultNancyBootstrapper
 {
     protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
@@ -50,12 +50,6 @@ Post["/hello/{user}"] = args =>
 {
     var logger = this.CreateLogger();
     var user = (string)args.user;
-    if (arg == "error")
-    {
-        logger.Warning("Looks like an error is heading your way");
-        throw new Exception("No way!");
-    }
-
     logger.Information("{User} Logged In", user);
     return $"Hello {user}";
 };
