@@ -1,7 +1,5 @@
 ﻿using Serilog.Core;
 using Serilog.Events;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Nancy.Serilog
 {
@@ -18,7 +16,6 @@ namespace Nancy.Serilog
         {
             var log = request;
 
-            
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestId), new ScalarValue(log.RequestId)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Method), new ScalarValue(log.Method)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Path), new ScalarValue(log.Path)));
@@ -27,6 +24,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestContentLength), new ScalarValue(log.RequestContentLength)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestContentType), new ScalarValue(log.RequestContentType)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestBodyContent), new ScalarValue(log.RequestBodyContent)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.UserIPAddress), new ScalarValue(log.UserIPAddress)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestHeaders), EnricherProps.FromDictionary(log.RequestHeaders)));
         }
 
