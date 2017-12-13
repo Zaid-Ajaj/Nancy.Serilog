@@ -3,7 +3,9 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Nancy.Serilog
 {
@@ -78,6 +80,16 @@ namespace Nancy.Serilog
             nancyResponseData.ReasonPhrase = context.Response.ReasonPhrase ?? "";
             nancyResponseData.ResolvedPath = context.ResolvedRoute.Description.Path;
             nancyResponseData.RequestedPath = context.Request.Path;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                context.Response.Contents(memoryStream);
+                memoryStream.Flush();
+                memoryStream.Position = 0;
+                nancyResponseData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                nancyResponseData.ResponseContentLength = nancyResponseData.ResponseContent.Length;
+            }
+
             var method = context.Request.Method;
             var logger = Log.ForContext(new ResponseLogEnricher(nancyResponseData));
             logger.Information($"Response {method} {nancyResponseData.RequestedPath.TrimAt(40)}");

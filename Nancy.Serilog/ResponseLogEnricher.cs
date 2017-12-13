@@ -23,7 +23,8 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedPath), new ScalarValue(log.ResolvedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestedPath), new ScalarValue(log.RequestedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseHeaders), EnricherProps.FromDictionary(log.ResponseHeaders)));
-
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseContent), new ScalarValue(log.ResponseContent)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseContentLength), new ScalarValue(log.ResponseContentLength)));
         }
     }
 }
