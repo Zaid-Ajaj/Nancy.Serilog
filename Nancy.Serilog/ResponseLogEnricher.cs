@@ -21,6 +21,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Duration), new ScalarValue(log.Duration)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ReasonPhrase), new ScalarValue(log.ReasonPhrase)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedPath), new ScalarValue(log.ResolvedPath)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestedPath), new ScalarValue(log.RequestedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseHeaders), EnricherProps.FromDictionary(log.ResponseHeaders)));
 
         }

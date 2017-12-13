@@ -12,6 +12,7 @@ namespace Nancy.Serilog
         public string RequestContentType { get; set; }
         public string UserIPAddress { get; set; }
         public string QueryString { get; set; }
+        public Dictionary<string, string> Query { get; set; }
         public Dictionary<string, string> RequestHeaders { get; set; }
     }
 }

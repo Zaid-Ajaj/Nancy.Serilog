@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnricherProps.cs" />
+    <Compile Include="ErrorLogData.cs" />
+    <Compile Include="ErrorLogEnricher.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="NancyContextExtensions.cs" />
     <Compile Include="NancyModuleExtensions.cs" />

@@ -9,6 +9,7 @@ namespace Nancy.Serilog
         public string ResponseContentType { get; set; }
         public string ReasonPhrase { get; set; }
         public string ResolvedPath { get; set; }
+        public string RequestedPath { get; set; }
         public Dictionary<string, string> ResponseHeaders { get; set; }
     }
 }

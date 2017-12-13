@@ -26,6 +26,8 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestBodyContent), new ScalarValue(log.RequestBodyContent)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.UserIPAddress), new ScalarValue(log.UserIPAddress)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestHeaders), EnricherProps.FromDictionary(log.RequestHeaders)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Query), EnricherProps.FromDictionary(log.Query)));
+
         }
 
 
