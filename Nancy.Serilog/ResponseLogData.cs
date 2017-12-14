@@ -13,5 +13,7 @@ namespace Nancy.Serilog
         public string ResolvedPath { get; set; }
         public string RequestedPath { get; set; }
         public Dictionary<string, string> ResponseHeaders { get; set; }
+        public Dictionary<string, string> ResponseCookies { get; set; }
+        public ResponseCookie[] RawResponseCookies { get; set; }
     }
 }

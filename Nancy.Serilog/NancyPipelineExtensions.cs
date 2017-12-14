@@ -75,11 +75,27 @@ namespace Nancy.Serilog
             nancyResponseData.RequestId = (string)context.Items["RequestId"];
             nancyResponseData.Duration = stopwatch.ElapsedMilliseconds;
             nancyResponseData.StatusCode = (int)context.Response.StatusCode;
-            nancyResponseData.ResponseHeaders = (Dictionary<string, string>)context.Response.Headers;
+            nancyResponseData.ResponseHeaders = new Dictionary<string, string>(context.Response.Headers);
             nancyResponseData.ResponseContentType = context.Response.ContentType ?? "";
             nancyResponseData.ReasonPhrase = context.Response.ReasonPhrase ?? "";
             nancyResponseData.ResolvedPath = context.ResolvedRoute.Description.Path;
             nancyResponseData.RequestedPath = context.Request.Path;
+            nancyResponseData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
+            {
+                HttpOnly = cookie.HttpOnly,
+                Secure = cookie.Secure,
+                Expires = cookie.Expires,
+                Name = cookie.Name,
+                Value = cookie.Value
+                              
+            }).ToArray();
+
+            var cookieDict = new Dictionary<string, string>();
+            foreach(var cookie in context.Response.Cookies) {
+                cookieDict.Add(cookie.Name, cookie.Value);
+            }
+
+            nancyResponseData.ResponseCookies = cookieDict;
 
             using (var memoryStream = new MemoryStream())
             {
@@ -93,7 +109,6 @@ namespace Nancy.Serilog
             var method = context.Request.Method;
             var logger = Log.ForContext(new ResponseLogEnricher(nancyResponseData));
             logger.Information($"Response {method} {nancyResponseData.RequestedPath.TrimAt(40)}");
-
         }
     }
 }

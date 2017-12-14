@@ -14,5 +14,6 @@ namespace Nancy.Serilog
         public string QueryString { get; set; }
         public Dictionary<string, string> Query { get; set; }
         public Dictionary<string, string> RequestHeaders { get; set; }
+        public Dictionary<string, string> RequestCookies { get; set; }
     }
 }

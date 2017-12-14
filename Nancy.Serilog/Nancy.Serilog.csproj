@@ -60,6 +60,7 @@
     <Compile Include="RequestLogEnricher.cs" />
     <Compile Include="ResponseLogData.cs" />
     <Compile Include="ResponseLogEnricher.cs" />
+    <Compile Include="ResponseCookie.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

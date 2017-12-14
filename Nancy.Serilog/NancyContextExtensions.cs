@@ -16,7 +16,6 @@ namespace Nancy.Serilog
 
         public static Dictionary<string, string> ReadRequestHeaders(this RequestHeaders headers)
         {
-
             var dict = new Dictionary<string, string>();
             foreach (var key in headers.Keys)
             {
@@ -51,6 +50,7 @@ namespace Nancy.Serilog
             request.RequestHeaders = nancyRequest.Headers.ReadRequestHeaders();
             request.UserIPAddress = nancyRequest.UserHostAddress;
             request.Query = ReadQuery(nancyRequest.Query);
+            request.RequestCookies = new Dictionary<string, string>(nancyRequest.Cookies);
             return request;
         }
     }

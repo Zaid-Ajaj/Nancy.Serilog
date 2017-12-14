@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 using Nancy;
 using Nancy.Hosting.Self;
@@ -8,14 +9,23 @@ using Nancy.Serilog;
 
 using Serilog;
 using Serilog.Formatting.Json;
+using Serilog.Sinks.Elasticsearch;
+using Nancy.Cookies;
+using System.Threading.Tasks;
 
 namespace SelfhostedSample
 {
     public class HomeModule : NancyModule
     {
+        static Random rnd = new Random();
+
         public HomeModule()
         {
-            Get["/"] = args => "Hello Serilog";
+            Get["/", true] = async (args, ctor) => 
+            { 
+               await Task.Delay(rnd.Next(400, 800));
+               return "Hello Serilog";
+            };
 
             Post["/hello/{user}"] = args =>
             {
@@ -28,7 +38,9 @@ namespace SelfhostedSample
                 }
 
                 logger.Information("{User} Logged In", user);
-                return $"Hello {user}";
+                return Negotiate.WithHeader("SpecialHeader","SpecialValue")
+                                .WithCookie(new NancyCookie("special-cookie","cookie value", DateTime.Now.AddHours(1)))
+                                .WithModel($"Hello {user}");
             };
         }
     }
@@ -51,16 +63,20 @@ namespace SelfhostedSample
                 .Enrich.WithDemystifiedStackTraces()
                 .Enrich.WithProperty("ApplicationId", "SelfhostedTestApp")
                 .WriteTo.Console(new JsonFormatter())
-                .WriteTo.Seq("http://localhost:5341")
+				.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+				{
+					AutoRegisterTemplate = true,
+                    InlineFields = true
+				})
                 .CreateLogger();
-
-            var url = "http://localhost:8080";
+            
+            var url = "http://localhost:8090";
             var config = new HostConfiguration { RewriteLocalhost = false };
-            using (var host = new NancyHost(new Uri(url), new CustomBootstrapper()))
+            using (var host = new NancyHost(new Uri(url), new CustomBootstrapper(), config))
             {
                 host.Start();
                 Console.WriteLine($"Started server at: {url}");
-                Console.ReadKey();
+                Thread.Sleep(-1); // infinitely
             }
         }
     }
