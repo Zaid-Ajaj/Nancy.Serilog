@@ -22,6 +22,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.ResolvedPath), new ScalarValue(errorLog.ResolvedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.RequestedPath), new ScalarValue(errorLog.RequestedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.Method), new ScalarValue(errorLog.Method)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.ResolvedRouteParameters), EnricherProps.FromDictionary(errorLog.ResolvedRouteParameters)));
         }
     }
 }

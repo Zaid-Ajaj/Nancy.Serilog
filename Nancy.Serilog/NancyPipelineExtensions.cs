@@ -40,6 +40,7 @@ namespace Nancy.Serilog
             errorLogData.ResolvedPath = context.ResolvedRoute.Description.Path;
             errorLogData.RequestedPath = context.Request.Path;
             errorLogData.Method = context.Request.Method;
+            errorLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
             var logger = Log.ForContext(new ErrorLogEnricher(errorLogData)); 
             logger.Error(ex, "Server Error");
             return null;

@@ -12,6 +12,7 @@ namespace Nancy.Serilog
         public string ResolvedPath { get; set; }
         public string RequestedPath { get; set; }
         public string Method { get; set; }
+        public Dictionary<string, string> ResolvedRouteParameters { get; set; }
         public int StatusCode { get; set; } = 500; // Internal Server Error,
     }
 }
