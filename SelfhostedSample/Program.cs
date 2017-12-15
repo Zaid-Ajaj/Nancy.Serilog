@@ -21,10 +21,10 @@ namespace SelfhostedSample
 
         public HomeModule()
         {
-            Get["/", true] = async (args, ctor) => 
-            { 
-               await Task.Delay(rnd.Next(400, 800));
-               return "Hello Serilog";
+            Get["/", true] = async (args, ctor) =>
+            {
+                await Task.Delay(rnd.Next(400, 800));
+                return "Hello Serilog";
             };
 
             Post["/hello/{user}"] = args =>
@@ -38,8 +38,8 @@ namespace SelfhostedSample
                 }
 
                 logger.Information("{User} Logged In", user);
-                return Negotiate.WithHeader("SpecialHeader","SpecialValue")
-                                .WithCookie(new NancyCookie("special-cookie","cookie value", DateTime.Now.AddHours(1)))
+                return Negotiate.WithHeader("SpecialHeader", "SpecialValue")
+                                .WithCookie(new NancyCookie("special-cookie", "cookie value", DateTime.Now.AddHours(1)))
                                 .WithModel($"Hello {user}");
             };
         }
@@ -63,13 +63,13 @@ namespace SelfhostedSample
                 .Enrich.WithDemystifiedStackTraces()
                 .Enrich.WithProperty("ApplicationId", "SelfhostedTestApp")
                 .WriteTo.Console(new JsonFormatter())
-				.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-				{
-					AutoRegisterTemplate = true,
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+                {
+                    AutoRegisterTemplate = true,
                     InlineFields = true
-				})
+                })
                 .CreateLogger();
-            
+
             var url = "http://localhost:8090";
             var config = new HostConfiguration { RewriteLocalhost = false };
             using (var host = new NancyHost(new Uri(url), new CustomBootstrapper(), config))

@@ -39,6 +39,7 @@ namespace Nancy.Serilog
             errorLogData.Duration = stopwatch.ElapsedMilliseconds;
             errorLogData.ResolvedPath = context.ResolvedRoute.Description.Path;
             errorLogData.RequestedPath = context.Request.Path;
+            errorLogData.Method = context.Request.Method;
             var logger = Log.ForContext(new ErrorLogEnricher(errorLogData)); 
             logger.Error(ex, "Server Error");
             return null;
@@ -68,47 +69,51 @@ namespace Nancy.Serilog
                 return; 
             }
 
-            var nancyResponseData = new ResponseLogData();
+            var responseLogData = new ResponseLogData();
             var stopwatch = (Stopwatch)context.Items["Stopwatch"];
             stopwatch.Stop();
 
-            nancyResponseData.RequestId = (string)context.Items["RequestId"];
-            nancyResponseData.Duration = stopwatch.ElapsedMilliseconds;
-            nancyResponseData.StatusCode = (int)context.Response.StatusCode;
-            nancyResponseData.ResponseHeaders = new Dictionary<string, string>(context.Response.Headers);
-            nancyResponseData.ResponseContentType = context.Response.ContentType ?? "";
-            nancyResponseData.ReasonPhrase = context.Response.ReasonPhrase ?? "";
-            nancyResponseData.ResolvedPath = context.ResolvedRoute.Description.Path;
-            nancyResponseData.RequestedPath = context.Request.Path;
-            nancyResponseData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
+            responseLogData.RequestId = (string)context.Items["RequestId"];
+            responseLogData.Duration = stopwatch.ElapsedMilliseconds;
+            responseLogData.StatusCode = (int)context.Response.StatusCode;
+            responseLogData.ResponseHeaders = new Dictionary<string, string>(context.Response.Headers);
+            responseLogData.ResponseContentType = context.Response.ContentType ?? "";
+            responseLogData.ReasonPhrase = context.Response.ReasonPhrase ?? "";
+            responseLogData.ResolvedPath = context.ResolvedRoute.Description.Path;
+            responseLogData.RequestedPath = context.Request.Path;
+            responseLogData.Method = context.Request.Method;
+            responseLogData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
             {
-                HttpOnly = cookie.HttpOnly,
+                HttpOnly = cookie.HttpOnly, 
                 Secure = cookie.Secure,
                 Expires = cookie.Expires,
                 Name = cookie.Name,
                 Value = cookie.Value
-                              
             }).ToArray();
 
+            // Add cookies as key-valued dict, easier to index on documents
+            // for example if you are using Elasticseach
             var cookieDict = new Dictionary<string, string>();
-            foreach(var cookie in context.Response.Cookies) {
+            foreach(var cookie in context.Response.Cookies) 
+            {
                 cookieDict.Add(cookie.Name, cookie.Value);
             }
 
-            nancyResponseData.ResponseCookies = cookieDict;
+            responseLogData.ResponseCookies = cookieDict;
 
+            // Read the contents of the response stream and add it to log
             using (var memoryStream = new MemoryStream())
             {
                 context.Response.Contents(memoryStream);
                 memoryStream.Flush();
                 memoryStream.Position = 0;
-                nancyResponseData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
-                nancyResponseData.ResponseContentLength = nancyResponseData.ResponseContent.Length;
+                responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
             }
 
             var method = context.Request.Method;
-            var logger = Log.ForContext(new ResponseLogEnricher(nancyResponseData));
-            logger.Information($"Response {method} {nancyResponseData.RequestedPath.TrimAt(40)}");
+            var logger = Log.ForContext(new ResponseLogEnricher(responseLogData));
+            logger.Information($"Response {method} {responseLogData.RequestedPath.TrimAt(40)}");
         }
     }
 }

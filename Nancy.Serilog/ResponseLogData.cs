@@ -6,6 +6,7 @@ namespace Nancy.Serilog
     {
         public int StatusCode { get; set; }
         public long Duration { get; set; }
+        public string Method { get; set; }
         public string ResponseContentType { get; set; }
         public string ResponseContent { get; set; }
         public long ResponseContentLength { get; set; }

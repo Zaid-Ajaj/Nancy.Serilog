@@ -19,6 +19,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.StatusCode), new ScalarValue(log.StatusCode)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseContentType), new ScalarValue(log.ResponseContentType)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Duration), new ScalarValue(log.Duration)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Method), new ScalarValue(log.Method)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ReasonPhrase), new ScalarValue(log.ReasonPhrase)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedPath), new ScalarValue(log.ResolvedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestedPath), new ScalarValue(log.RequestedPath)));
