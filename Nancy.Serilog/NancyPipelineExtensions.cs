@@ -12,6 +12,9 @@ namespace Nancy.Serilog
     public static class NancyPipelineExtensions
     {
         private static bool serilogEnabled = false;
+
+        private static Options options = new Options();
+
         public static void EnableSerilog(this IPipelines pipelines)
         {
             if (serilogEnabled) return;
@@ -21,7 +24,20 @@ namespace Nancy.Serilog
             pipelines.AfterRequest.AddItemToEndOfPipeline(AfterPipelineHook);
 
             serilogEnabled = true;
-        } 
+        }
+
+        public static void EnableSerilog(this IPipelines pipelines, Options options)
+        {
+            if (serilogEnabled) return;
+
+            NancyPipelineExtensions.options = options;
+
+            pipelines.BeforeRequest.AddItemToStartOfPipeline(BeforePipelineHook);
+            pipelines.OnError.AddItemToEndOfPipeline(OnErrorHook);
+            pipelines.AfterRequest.AddItemToEndOfPipeline(AfterPipelineHook);
+
+            serilogEnabled = true;
+        }
 
         static dynamic OnErrorHook(NancyContext context, Exception ex)
         {
@@ -41,7 +57,7 @@ namespace Nancy.Serilog
             errorLogData.RequestedPath = context.Request.Path;
             errorLogData.Method = context.Request.Method;
             errorLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
-            var logger = Log.ForContext(new ErrorLogEnricher(errorLogData)); 
+            var logger = Log.ForContext(new ErrorLogEnricher(errorLogData, options)); 
             logger.Error(ex, "Server Error");
             return null;
         }
@@ -53,7 +69,7 @@ namespace Nancy.Serilog
             requestLogData.RequestId = Guid.NewGuid().ToString();
             context.Items.Add("Stopwatch", stopwatch);
             context.Items.Add("RequestId", requestLogData.RequestId);
-            var logger = Log.ForContext(new RequestLogEnricher(requestLogData));
+            var logger = Log.ForContext(new RequestLogEnricher(requestLogData, options));
             logger.Information($"Request {requestLogData.Method} {requestLogData.Path.TrimAt(40)}");
             return null;
         }
@@ -83,14 +99,19 @@ namespace Nancy.Serilog
             responseLogData.ResolvedPath = context.ResolvedRoute.Description.Path;
             responseLogData.RequestedPath = context.Request.Path;
             responseLogData.Method = context.Request.Method;
-            responseLogData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
+
+            if (!options.IgnoredResponseLogFields.Contains("RawResponseCookies"))
             {
-                HttpOnly = cookie.HttpOnly, 
-                Secure = cookie.Secure,
-                Expires = cookie.Expires,
-                Name = cookie.Name,
-                Value = cookie.Value
-            }).ToArray();
+                responseLogData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
+                {
+                    HttpOnly = cookie.HttpOnly,
+                    Secure = cookie.Secure,
+                    Expires = cookie.Expires,
+                    Name = cookie.Name,
+                    Value = cookie.Value
+                }).ToArray();
+            }
+
 
             // Add cookies as key-valued dict, easier to index on documents
             // for example if you are using Elasticseach
@@ -102,20 +123,33 @@ namespace Nancy.Serilog
 
             responseLogData.ResponseCookies = cookieDict;
 
-            // Read the contents of the response stream and add it to log
-            using (var memoryStream = new MemoryStream())
+            if (!options.IgnoredResponseLogFields.Contains("ResponseContent"))
             {
-                context.Response.Contents(memoryStream);
-                memoryStream.Flush();
-                memoryStream.Position = 0;
-                responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
-                responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
+                // Read the contents of the response stream and add it to log
+                using (var memoryStream = new MemoryStream())
+                {
+                    context.Response.Contents(memoryStream);
+                    memoryStream.Flush();
+                    memoryStream.Position = 0;
+                    responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
+                }
+            }
+            else
+            {
+                responseLogData.ResponseContent = "";
+                responseLogData.ResponseContentLength = 0;
             }
 
-            responseLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
+            if (!options.IgnoredResponseLogFields.Contains("ResolvedRouteParameters"))
+            {
+                responseLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
+            }
+            
+            
 
             var method = context.Request.Method;
-            var logger = Log.ForContext(new ResponseLogEnricher(responseLogData));
+            var logger = Log.ForContext(new ResponseLogEnricher(responseLogData, options));
             logger.Information($"Response {method} {responseLogData.RequestedPath.TrimAt(40)}");
         }
     }

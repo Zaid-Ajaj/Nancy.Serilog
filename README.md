@@ -2,8 +2,9 @@
 
 [Nancy](https://github.com/NancyFx/Nancy) plugin for application-wide logging using the [Serilog](https://github.com/serilog/serilog) logging framework.
 
-> This library is experiemental
+> This library is still experiemental
 
+## Getting Started
 Install it from Nuget:
 ```
 Install-Package Nancy.Serilog
@@ -35,15 +36,13 @@ public class Index : NancyModule
     }
 }
 ```
-Without doing any extra configuration, navigating to `/` (root) will be logged: In the following screenshot I am using a self-hosted Nancy app (the sample of this repo).
+Without doing any extra configuration, navigating to `/` (root) will be logged: In the following screenshot I am using a self-hosted Nancy app (the sample of this repo) with some ignored fields.
 
 ![console](https://user-images.githubusercontent.com/13316248/33915081-af7128e2-dfa1-11e7-8d58-1dd6b191e86a.png)
 
-Ofcourse, this is not human-readable because of console-json combo we are using as the sink. But Serilog has countless other sinks, one of which is [Seq](https://getseq.net/) which I am starting to really like for local developement where you can browse log data easily:
 
-![seq](https://user-images.githubusercontent.com/13316248/33915241-93ec42d6-dfa2-11e7-8ac8-bd4fc55d85d5.png)
-
-Also notice how the two logs are correlated using `RequestId` property. This is how you find logs coming from a single request. To enable this correlation, you _cannot_ use the globally shared `ILogger` (i.e. from Log.*Something*) because you want to use a logger bound to the request context: Nancy.Serilog provides an extension method `CreateLogger()` you can call from your `NancyModule` like this:
+## Log Correlation
+ Notice how the two logs are correlated using `RequestId` property. This is how you find logs coming from a single request. To enable this correlation, you _cannot_ use the globally shared `ILogger` (i.e. from Log.*Something*) because you want to use a logger bound to the request context: Nancy.Serilog provides an extension method `CreateLogger()` you can call from your `NancyModule` like this:
 
 ```cs
 Post["/hello/{user}"] = args =>
@@ -58,3 +57,31 @@ Post["/hello/{user}"] = args =>
 Then `POST`ing some data from Postman will give us the following: 
 
 ![post](https://user-images.githubusercontent.com/13316248/33915879-287f96ac-dfa6-11e7-9d59-d176909f9a1f.png)
+
+## Ignoring Fields
+Nancy.Serilog will try to retrieve all the information it can get from requests, responses and errors. However, you can still tell the library what fields to ignore from the logs, it goes like this: 
+```cs
+    class CustomBootstrapper : DefaultNancyBootstrapper
+    {
+        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+        {
+            pipelines.EnableSerilog(new Options
+            {
+                IgnoredResponseLogFields = new string[]
+                {
+                    "RawResponseCookies",
+                    "ResponseHeaders",
+                    "ResponseCookies",
+                },
+
+                IgnoredRequestLogFields = new string[]
+                {
+                    "RequestHeaders"
+                }
+            });
+
+
+            StaticConfiguration.DisableErrorTraces = false;
+        }
+    }
+```

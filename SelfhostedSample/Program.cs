@@ -48,7 +48,22 @@ namespace SelfhostedSample
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
-            pipelines.EnableSerilog();
+            pipelines.EnableSerilog(new Options
+            {
+                IgnoredResponseLogFields = new string[]
+                {
+                    "RawResponseCookies",
+                    "ResponseHeaders",
+                    "ResponseCookies",
+                },
+
+                IgnoredRequestLogFields = new string[]
+                {
+                    "RequestHeaders"
+                }
+            });
+
+
             StaticConfiguration.DisableErrorTraces = false;
         }
     }

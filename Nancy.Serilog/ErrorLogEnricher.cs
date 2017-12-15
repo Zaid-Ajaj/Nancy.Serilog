@@ -8,10 +8,16 @@ namespace Nancy.Serilog
     public class ErrorLogEnricher : ILogEventEnricher
     {
         private ErrorLogData errorLog;
+        private Options options; 
 
-        public ErrorLogEnricher(ErrorLogData errorLog)
+        public ErrorLogEnricher(ErrorLogData errorLog, Options options)
         {
             this.errorLog = errorLog;
+            this.options = options;
+            if (this.options.IgnoreErrorLogFields == null)
+            {
+                this.options.IgnoreErrorLogFields = new string[] { };
+            }
         }
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
@@ -23,6 +29,11 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.RequestedPath), new ScalarValue(errorLog.RequestedPath)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.Method), new ScalarValue(errorLog.Method)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.ResolvedRouteParameters), EnricherProps.FromDictionary(errorLog.ResolvedRouteParameters)));
+
+            foreach(var ignoreField in options.IgnoreErrorLogFields)
+            {
+                logEvent.RemovePropertyIfPresent(ignoreField);
+            }
         }
     }
 }

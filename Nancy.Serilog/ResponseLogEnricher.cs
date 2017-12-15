@@ -6,10 +6,15 @@ namespace Nancy.Serilog
     public class ResponseLogEnricher : ILogEventEnricher
     {
         private ResponseLogData response;
-
-        public ResponseLogEnricher(ResponseLogData response)
+        private Options options;
+        public ResponseLogEnricher(ResponseLogData response, Options options)
         {
             this.response = response;
+            this.options = options;
+            if (this.options.IgnoredResponseLogFields == null)
+            {
+                this.options.IgnoredResponseLogFields = new string[] { };
+            }
         }
          
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
@@ -29,6 +34,12 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RawResponseCookies), EnricherProps.FromCookies(log.RawResponseCookies)));
 			logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseCookies), EnricherProps.FromDictionary(log.ResponseCookies)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedRouteParameters), EnricherProps.FromDictionary(log.ResolvedRouteParameters)));
+
+
+            foreach(var ignoredField in options.IgnoredResponseLogFields)
+            {
+                logEvent.RemovePropertyIfPresent(ignoredField);
+            }
         }
     }
 }
