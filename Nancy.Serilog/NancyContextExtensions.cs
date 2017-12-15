@@ -25,10 +25,11 @@ namespace Nancy.Serilog
             return dict;
         }
 
-        public static Dictionary<string, string> ReadQuery(dynamic query)
+        public static Dictionary<string, string> ReadDynamicDictionary(dynamic query)
         {
 
             var dict = new Dictionary<string, string>();
+
             foreach (var key in query.Keys)
             {
                 dict.Add(key, string.Join(", ", query[key])); 
@@ -37,8 +38,9 @@ namespace Nancy.Serilog
             return dict; 
         }
 
-        public static RequestLogData ReadRequestProperties(this Request nancyRequest)
+        public static RequestLogData ReadRequestProperties(this NancyContext context)
         {
+            var nancyRequest = context.Request;
             var request = new RequestLogData();
             request.RequestHostName = nancyRequest.Url.HostName;
             request.Method = nancyRequest.Method;
@@ -49,7 +51,7 @@ namespace Nancy.Serilog
             request.RequestBodyContent = nancyRequest.Body.ReadBodyContent();
             request.RequestHeaders = nancyRequest.Headers.ReadRequestHeaders();
             request.UserIPAddress = nancyRequest.UserHostAddress;
-            request.Query = ReadQuery(nancyRequest.Query);
+            request.Query = ReadDynamicDictionary(nancyRequest.Query);
             request.RequestCookies = new Dictionary<string, string>(nancyRequest.Cookies);
             return request;
         }

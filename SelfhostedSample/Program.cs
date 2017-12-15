@@ -9,7 +9,6 @@ using Nancy.Serilog;
 
 using Serilog;
 using Serilog.Formatting.Json;
-using Serilog.Sinks.Elasticsearch;
 using Nancy.Cookies;
 using System.Threading.Tasks;
 
@@ -50,9 +49,9 @@ namespace SelfhostedSample
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             pipelines.EnableSerilog();
+            StaticConfiguration.DisableErrorTraces = false;
         }
     }
-
 
     class Program
     {
@@ -63,14 +62,9 @@ namespace SelfhostedSample
                 .Enrich.WithDemystifiedStackTraces()
                 .Enrich.WithProperty("ApplicationId", "SelfhostedTestApp")
                 .WriteTo.Console(new JsonFormatter())
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-                {
-                    AutoRegisterTemplate = true,
-                    InlineFields = true
-                })
                 .CreateLogger();
 
-            var url = "http://localhost:8090";
+            var url = "http://localhost:4040";
             var config = new HostConfiguration { RewriteLocalhost = false };
             using (var host = new NancyHost(new Uri(url), new CustomBootstrapper(), config))
             {

@@ -48,12 +48,12 @@ namespace Nancy.Serilog
         static Response BeforePipelineHook(NancyContext context)
         {
             var stopwatch = Stopwatch.StartNew();
-            var nancyRequest = context.Request.ReadRequestProperties();
-            nancyRequest.RequestId = Guid.NewGuid().ToString();
+            var requestLogData = context.ReadRequestProperties();
+            requestLogData.RequestId = Guid.NewGuid().ToString();
             context.Items.Add("Stopwatch", stopwatch);
-            context.Items.Add("RequestId", nancyRequest.RequestId);
-            var logger = Log.ForContext(new RequestLogEnricher(nancyRequest));
-            logger.Information($"Request {nancyRequest.Method} {nancyRequest.Path.TrimAt(40)}");
+            context.Items.Add("RequestId", requestLogData.RequestId);
+            var logger = Log.ForContext(new RequestLogEnricher(requestLogData));
+            logger.Information($"Request {requestLogData.Method} {requestLogData.Path.TrimAt(40)}");
             return null;
         }
 
@@ -110,6 +110,8 @@ namespace Nancy.Serilog
                 responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                 responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
             }
+
+            responseLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
 
             var method = context.Request.Method;
             var logger = Log.ForContext(new ResponseLogEnricher(responseLogData));

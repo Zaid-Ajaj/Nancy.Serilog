@@ -28,6 +28,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseContentLength), new ScalarValue(log.ResponseContentLength)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RawResponseCookies), EnricherProps.FromCookies(log.RawResponseCookies)));
 			logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseCookies), EnricherProps.FromDictionary(log.ResponseCookies)));
-		}
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedRouteParameters), EnricherProps.FromDictionary(log.ResolvedRouteParameters)));
+        }
     }
 }
