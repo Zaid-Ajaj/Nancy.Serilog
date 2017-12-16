@@ -1,4 +1,4 @@
-# Nancy.Serilog
+# Nancy.Serilog [![Nuget](https://img.shields.io/nuget/v/Nancy.Serilog.svg?colorB=green)](https://www.nuget.org/packages/Nancy.Serilog)
 
 [Nancy](https://github.com/NancyFx/Nancy) plugin for application-wide logging using the [Serilog](https://github.com/serilog/serilog) logging framework.
 
