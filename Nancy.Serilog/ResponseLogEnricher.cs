@@ -13,7 +13,7 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoredResponseLogFields == null)
             {
-                this.options.IgnoredResponseLogFields = new string[] { };
+                this.options.IgnoredResponseLogFields = new FieldChoser<ErrorLogData>();
             }
         }
          
@@ -36,7 +36,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedRouteParameters), EnricherProps.FromDictionary(log.ResolvedRouteParameters)));
 
 
-            foreach(var ignoredField in options.IgnoredResponseLogFields)
+            foreach(var ignoredField in options.IgnoredResponseLogFields.ToArray())
             {
                 logEvent.RemovePropertyIfPresent(ignoredField);
             }

@@ -59,10 +59,10 @@ namespace SelfhostedSample
 
                 IgnoredRequestLogFields = new string[]
                 {
-                    "RequestHeaders"
+                    "RequestHeaders",
+                    "RequestCookies"
                 }
             });
-
 
             StaticConfiguration.DisableErrorTraces = false;
         }

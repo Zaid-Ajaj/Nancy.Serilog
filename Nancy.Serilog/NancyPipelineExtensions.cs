@@ -100,7 +100,7 @@ namespace Nancy.Serilog
             responseLogData.RequestedPath = context.Request.Path;
             responseLogData.Method = context.Request.Method;
 
-            if (!options.IgnoredResponseLogFields.Contains("RawResponseCookies"))
+            if (!options.IgnoredResponseLogFields.ToArray().Contains("RawResponseCookies"))
             {
                 responseLogData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
                 {
@@ -123,7 +123,7 @@ namespace Nancy.Serilog
 
             responseLogData.ResponseCookies = cookieDict;
 
-            if (!options.IgnoredResponseLogFields.Contains("ResponseContent"))
+            if (!options.IgnoredResponseLogFields.ToArray().Contains("ResponseContent"))
             {
                 // Read the contents of the response stream and add it to log
                 using (var memoryStream = new MemoryStream())
@@ -141,7 +141,7 @@ namespace Nancy.Serilog
                 responseLogData.ResponseContentLength = 0;
             }
 
-            if (!options.IgnoredResponseLogFields.Contains("ResolvedRouteParameters"))
+            if (!options.IgnoredResponseLogFields.ToArray().Contains("ResolvedRouteParameters"))
             {
                 responseLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
             }

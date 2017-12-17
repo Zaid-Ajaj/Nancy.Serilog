@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Nancy.Serilog
+﻿namespace Nancy.Serilog
 {
     public class Options
     {
-        public string[] IgnoredRequestLogFields { get; set; } = new string[] { };
-        public string[] IgnoreErrorLogFields { get; set; } = new string[] { };
-        public string[] IgnoredResponseLogFields { get; set; } = new string[] { };
+        public FieldChoser<RequestLogData> IgnoredRequestLogFields { get; set; } = new FieldChoser<RequestLogData>();
+        public FieldChoser<ResponseLogData> IgnoreErrorLogFields { get; set; } = new FieldChoser<ResponseLogData>();
+        public FieldChoser<ErrorLogData> IgnoredResponseLogFields { get; set; } = new FieldChoser<ErrorLogData>();
     }
 }

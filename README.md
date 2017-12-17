@@ -9,7 +9,7 @@ Install it from Nuget:
 ```
 Install-Package Nancy.Serilog
 ```
-Enable logging from your Bootstrapper at `ApplicationStartup`, this block is a good place to configure actual logger. 
+Enable logging from your Bootstrapper at `ApplicationStartup`, this block is a good place to configure the actual logger. 
 ```cs
 using Nancy.Serilog;
 // ...
@@ -17,8 +17,10 @@ class CustomBootstrapper : DefaultNancyBootstrapper
 {
     protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
     {
+        
         pipelines.EnableSerilog();
 
+        // Configure logger to output json-formatted logs to the console
         Log.Logger = new LoggerConfiguration()
            .MinimumLevel.Information()
            .WriteTo.Console(new JsonFormatter())
@@ -42,24 +44,30 @@ Without doing any extra configuration, navigating to `/` (root) will be logged: 
 
 
 ## Log Correlation
- Notice how the two logs are correlated using `RequestId` property. This is how you find logs coming from a single request. To enable this correlation, you _cannot_ use the globally shared `ILogger` (i.e. from Log.*Something*) because you want to use a logger bound to the request context: Nancy.Serilog provides an extension method `CreateLogger()` you can call from your `NancyModule` like this:
+ Notice how the two logs are correlated with the same `RequestId` property. This property is attached to requests and responses so that you can find logs coming from a single roundtrip. When you write custom log messages, you want to include this `RequestId` property to your custom logs so that these too will be correlated to the same requests and responses. To do that, you want to use a logger that is *bound* to the request context: Nancy.Serilog provides an extension method called `CreateLogger()` you can call from your `NancyModule` as in the following snippet. The `ILogger` you get back has the `RequestId` attached to it. 
 
 ```cs
-Post["/hello/{user}"] = args =>
+public class Users : NancyModule
 {
-    var logger = this.CreateLogger();
-    var user = (string)args.user;
-    logger.Information("{User} Logged In", user);
-    return $"Hello {user}";
-};
+    public Users()
+    {
+        Post["/hello/{user}"] = args =>
+        {
+            var logger = this.CreateLogger();
+            var user = (string)args.user;
+            logger.Information("{User} Logged In", user);
+            return $"Hello {user}";
+        };
+    }
+}
 ```
 
-Then `POST`ing some data from Postman will give us the following: 
+Then `POST`ing some data from Postman will give us the following (using [Seq](https://getseq.net/) to browse log data), see how the second log message also has `RequestId`:  
 
 ![post](https://user-images.githubusercontent.com/13316248/33915879-287f96ac-dfa6-11e7-9d59-d176909f9a1f.png)
 
 ## Ignoring Fields
-Nancy.Serilog will try to retrieve all the information it can get from requests, responses and errors. However, you can still tell the library what fields to ignore from the logs, it goes like this: 
+Nancy.Serilog will try to retrieve all the information it can get from requests, responses and errors. However, you can still tell the library what fields to ignore *fluently* from the logs, it goes like this: 
 ```cs
     class CustomBootstrapper : DefaultNancyBootstrapper
     {
@@ -67,21 +75,22 @@ Nancy.Serilog will try to retrieve all the information it can get from requests,
         {
             pipelines.EnableSerilog(new Options
             {
-                IgnoredResponseLogFields = new string[]
-                {
-                    "RawResponseCookies",
-                    "ResponseHeaders",
-                    "ResponseCookies",
-                },
+                IgnoredResponseLogFields = 
+                    Ignore.FromResponse()
+                          .Field(res => res.RawResponseCookies)
+                          .Field(res => res.ReponseHeaders)
+                          .Field(res => res.ResponseCookies),
 
-                IgnoredRequestLogFields = new string[]
-                {
-                    "RequestHeaders"
-                }
+                IgnoredRequestLogFields = 
+                    Ignore.FromRequest()
+                          .Field(req => req.Method)
+                          .Field(req => req.RequestHeaders),
+
+                IgnoredErrorLogFields = 
+                    Ignore.FromError() 
+                          .Field(error => error.ResolvedRouteParameters)
+                          .Field(error => error.StatusCode)
             });
-
-
-            StaticConfiguration.DisableErrorTraces = false;
         }
     }
 ```

@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{82048530-8C76-4044-B9A4-D09C97CC910E}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{91B54E28-AC46-4D97-94B2-C6F93F894B53}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nancy.Serilog</RootNamespace>
-    <AssemblyName>Nancy.Serilog</AssemblyName>
+    <RootNamespace>Nancy.Serilog.Tests</RootNamespace>
+    <AssemblyName>Nancy.Serilog.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,14 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Nancy, Version=1.4.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.1.4.4\lib\net40\Nancy.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.6.0\lib\net45\Serilog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,24 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnricherProps.cs" />
-    <Compile Include="ErrorLogData.cs" />
-    <Compile Include="ErrorLogEnricher.cs" />
-    <Compile Include="Ignore.cs" />
-    <Compile Include="LogEntry.cs" />
-    <Compile Include="NancyContextExtensions.cs" />
-    <Compile Include="NancyModuleExtensions.cs" />
-    <Compile Include="NancyPipelineExtensions.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestLogData.cs" />
-    <Compile Include="RequestLogEnricher.cs" />
-    <Compile Include="ResponseLogData.cs" />
-    <Compile Include="ResponseLogEnricher.cs" />
-    <Compile Include="ResponseCookie.cs" />
+    <Compile Include="TinyTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nancy.Serilog\Nancy.Serilog.csproj">
+      <Project>{82048530-8c76-4044-b9a4-d09c97cc910e}</Project>
+      <Name>Nancy.Serilog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -14,7 +14,7 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoredRequestLogFields == null)
             {
-                this.options.IgnoredRequestLogFields = new string[] { };
+                this.options.IgnoredRequestLogFields = new FieldChoser<RequestLogData>();
             }
         }
 
@@ -35,7 +35,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Query), EnricherProps.FromDictionary(log.Query)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestCookies), EnricherProps.FromDictionary(log.RequestCookies)));
 
-            foreach (var ignoredField in options.IgnoredRequestLogFields)
+            foreach (var ignoredField in options.IgnoredRequestLogFields.ToArray())
             {
                 logEvent.RemovePropertyIfPresent(ignoredField);
             }

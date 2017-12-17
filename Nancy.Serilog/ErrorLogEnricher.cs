@@ -16,7 +16,7 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoreErrorLogFields == null)
             {
-                this.options.IgnoreErrorLogFields = new string[] { };
+                this.options.IgnoreErrorLogFields = new FieldChoser<ResponseLogData>();
             }
         }
 
@@ -30,7 +30,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.Method), new ScalarValue(errorLog.Method)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.ResolvedRouteParameters), EnricherProps.FromDictionary(errorLog.ResolvedRouteParameters)));
 
-            foreach(var ignoreField in options.IgnoreErrorLogFields)
+            foreach (var ignoreField in options.IgnoreErrorLogFields.ToArray())
             {
                 logEvent.RemovePropertyIfPresent(ignoreField);
             }
