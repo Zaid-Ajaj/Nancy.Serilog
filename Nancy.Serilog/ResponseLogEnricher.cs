@@ -13,7 +13,7 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoredResponseLogFields == null)
             {
-                this.options.IgnoredResponseLogFields = new FieldChoser<ErrorLogData>();
+                this.options.IgnoredResponseLogFields = new FieldChoser<ResponseLogData>();
             }
         }
          

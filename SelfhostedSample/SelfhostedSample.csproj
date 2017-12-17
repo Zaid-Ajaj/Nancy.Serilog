@@ -45,7 +45,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy.Serilog, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Serilog.0.4.0\lib\Nancy.Serilog.dll</HintPath>
+      <HintPath>..\packages\Nancy.Serilog.0.5.0\lib\Nancy.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">

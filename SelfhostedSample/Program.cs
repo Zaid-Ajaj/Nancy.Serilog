@@ -50,18 +50,8 @@ namespace SelfhostedSample
         {
             pipelines.EnableSerilog(new Options
             {
-                IgnoredResponseLogFields = new string[]
-                {
-                    "RawResponseCookies",
-                    "ResponseHeaders",
-                    "ResponseCookies",
-                },
 
-                IgnoredRequestLogFields = new string[]
-                {
-                    "RequestHeaders",
-                    "RequestCookies"
-                }
+
             });
 
             StaticConfiguration.DisableErrorTraces = false;

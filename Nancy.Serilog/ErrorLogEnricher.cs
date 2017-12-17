@@ -16,10 +16,10 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoreErrorLogFields == null)
             {
-                this.options.IgnoreErrorLogFields = new FieldChoser<ResponseLogData>();
+                this.options.IgnoreErrorLogFields = new FieldChoser<ErrorLogData>();
             }
         }
-
+         
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(errorLog.Duration), new ScalarValue(errorLog.Duration)));
