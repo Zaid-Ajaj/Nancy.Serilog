@@ -49,7 +49,9 @@ namespace Nancy.Serilog.Tests
 
             Test.Case("FieldChoser<T> returns empty array when no fields had been chosen", () => 
             {
-                var resultArray = new FieldChoser<ErrorLogData>();
+                var defaultChoser = new FieldChoser<ErrorLogData>();
+
+                Test.Equal(0, defaultChoser.ToArray().Length);
             });
 
             return Test.Report();
