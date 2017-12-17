@@ -50,8 +50,20 @@ namespace SelfhostedSample
         {
             pipelines.EnableSerilog(new Options
             {
+                IgnoredRequestLogFields = 
+                    Ignore.FromRequest()
+                          .Field(req => req.RequestCookies)
+                          .Field(req => req.UserIPAddress),
 
+                IgnoreErrorLogFields = 
+                    Ignore.FromError()
+                          .Field(error => error.ResolvedRouteParameters)
+                          .Field(error => error.StatusCode),
 
+                IgnoredResponseLogFields = 
+                    Ignore.FromResponse()
+                          .Field(res => res.RawResponseCookies)
+                          .Field(res => res.ResponseContent)
             });
 
             StaticConfiguration.DisableErrorTraces = false;
