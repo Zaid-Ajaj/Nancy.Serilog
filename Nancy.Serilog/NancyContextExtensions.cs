@@ -10,7 +10,10 @@ namespace Nancy.Serilog
         {
             using (var streamReader = new StreamReader(inputStream))
             {
-                return streamReader.ReadToEnd();
+                var content = streamReader.ReadToEnd();
+                // rewind stream to make it readable again from a Nancy module
+                inputStream.Position = 0;
+                return content;
             }
         }
 

@@ -20,10 +20,9 @@ namespace SelfhostedSample
 
         public HomeModule()
         {
-            Get["/", true] = async (args, ctor) =>
+            Get["/"] = args => 
             {
-                await Task.Delay(rnd.Next(400, 800));
-                return "Hello Serilog";
+                return $"{Thread.CurrentThread.ManagedThreadId}";
             };
 
             Post["/hello/{user}"] = args =>
@@ -52,7 +51,12 @@ namespace SelfhostedSample
             {
                 IgnoredRequestLogFields = 
                     Ignore.FromRequest()
+                          .Field(req => req.Path)
                           .Field(req => req.RequestCookies)
+                          .Field(req => req.RequestBodyContent)
+                          .Field(req => req.RequestContentLength)
+                          .Field(req => req.RequestContentType)
+                          .Field(req => req.Query)
                           .Field(req => req.UserIPAddress),
 
                 IgnoreErrorLogFields = 
@@ -63,7 +67,7 @@ namespace SelfhostedSample
                 IgnoredResponseLogFields = 
                     Ignore.FromResponse()
                           .Field(res => res.RawResponseCookies)
-                          .Field(res => res.ResponseContent)
+                          .Field(res => res.ResponseCookies)
             });
 
             StaticConfiguration.DisableErrorTraces = false;
@@ -77,6 +81,7 @@ namespace SelfhostedSample
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.WithDemystifiedStackTraces()
+                .Enrich.WithThreadId()
                 .Enrich.WithProperty("ApplicationId", "SelfhostedTestApp")
                 .WriteTo.Console(new JsonFormatter())
                 .CreateLogger();
