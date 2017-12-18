@@ -9,16 +9,16 @@ namespace Nancy.Serilog
 {
     public static class Ignore
     {
-        public static FieldChoser<ResponseLogData> FromResponse() => new FieldChoser<ResponseLogData>();
-        public static FieldChoser<RequestLogData> FromRequest() => new FieldChoser<RequestLogData>();
-        public static FieldChoser<ErrorLogData> FromError() => new FieldChoser<ErrorLogData>();
+        public static FieldChooser<ResponseLogData> FromResponse() => new FieldChooser<ResponseLogData>();
+        public static FieldChooser<RequestLogData> FromRequest() => new FieldChooser<RequestLogData>();
+        public static FieldChooser<ErrorLogData> FromError() => new FieldChooser<ErrorLogData>();
     }
 
-    public class FieldChoser<T>
+    public class FieldChooser<T>
     {
         private List<string> ignoredFields = new List<string>();
 
-        public FieldChoser<T> Field<TProp>(Expression<Func<T, TProp>> action)
+        public FieldChooser<T> Field<TProp>(Expression<Func<T, TProp>> action)
         {
             var expression = (MemberExpression)action.Body;
             string name = expression.Member.Name;

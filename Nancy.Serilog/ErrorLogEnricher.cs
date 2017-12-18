@@ -16,7 +16,7 @@ namespace Nancy.Serilog
             this.options = options;
             if (this.options.IgnoreErrorLogFields == null)
             {
-                this.options.IgnoreErrorLogFields = new FieldChoser<ErrorLogData>();
+                this.options.IgnoreErrorLogFields = new FieldChooser<ErrorLogData>();
             }
         }
          
