@@ -65,7 +65,7 @@ namespace Nancy.Serilog
         static Response BeforePipelineHook(NancyContext context)
         {
             var stopwatch = Stopwatch.StartNew();
-            var requestLogData = context.ReadRequestProperties();
+            var requestLogData = context.ReadRequestProperties(options);
             requestLogData.RequestId = Guid.NewGuid().ToString();
             context.Items.Add("Stopwatch", stopwatch);
             context.Items.Add("RequestId", requestLogData.RequestId);
@@ -86,68 +86,7 @@ namespace Nancy.Serilog
                 return; 
             }
 
-            var responseLogData = new ResponseLogData();
-            var stopwatch = (Stopwatch)context.Items["Stopwatch"];
-            stopwatch.Stop();
-
-            responseLogData.RequestId = (string)context.Items["RequestId"];
-            responseLogData.Duration = stopwatch.ElapsedMilliseconds;
-            responseLogData.StatusCode = (int)context.Response.StatusCode;
-            responseLogData.ResponseHeaders = new Dictionary<string, string>(context.Response.Headers);
-            responseLogData.ResponseContentType = context.Response.ContentType ?? "";
-            responseLogData.ReasonPhrase = context.Response.ReasonPhrase ?? "";
-            responseLogData.ResolvedPath = context.ResolvedRoute.Description.Path;
-            responseLogData.RequestedPath = context.Request.Path;
-            responseLogData.Method = context.Request.Method;
-
-            if (!options.IgnoredResponseLogFields.ToArray().Contains("RawResponseCookies"))
-            {
-                responseLogData.RawResponseCookies = context.Response.Cookies.Select(cookie => new ResponseCookie
-                {
-                    HttpOnly = cookie.HttpOnly,
-                    Secure = cookie.Secure,
-                    Expires = cookie.Expires,
-                    Name = cookie.Name,
-                    Value = cookie.Value
-                }).ToArray();
-            }
-
-
-            // Add cookies as key-valued dict, easier to index on documents
-            // for example if you are using Elasticseach
-            var cookieDict = new Dictionary<string, string>();
-            foreach(var cookie in context.Response.Cookies) 
-            {
-                cookieDict.Add(cookie.Name, cookie.Value);
-            }
-
-            responseLogData.ResponseCookies = cookieDict;
-
-            if (!options.IgnoredResponseLogFields.ToArray().Contains("ResponseContent"))
-            {
-                // Read the contents of the response stream and add it to log
-                using (var memoryStream = new MemoryStream())
-                {
-                    context.Response.Contents(memoryStream);
-                    memoryStream.Flush();
-                    memoryStream.Position = 0;
-                    responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
-                    responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
-                }
-            }
-            else
-            {
-                responseLogData.ResponseContent = "";
-                responseLogData.ResponseContentLength = 0;
-            }
-
-            if (!options.IgnoredResponseLogFields.ToArray().Contains("ResolvedRouteParameters"))
-            {
-                responseLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
-            }
-            
-            
-
+            var responseLogData = context.ReadResponseProperties(options);
             var method = context.Request.Method;
             var logger = Log.ForContext(new ResponseLogEnricher(responseLogData, options));
             logger.Information($"Response {method} {responseLogData.RequestedPath.TrimAt(40)}");

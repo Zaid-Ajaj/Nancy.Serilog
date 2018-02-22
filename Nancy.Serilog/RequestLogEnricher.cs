@@ -34,7 +34,11 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestHeaders), EnricherProps.FromDictionary(log.RequestHeaders)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Query), EnricherProps.FromDictionary(log.Query)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestCookies), EnricherProps.FromDictionary(log.RequestCookies)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.UserAgentDevice),new ScalarValue(log.UserAgentDevice)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.UserAgentFamily),new ScalarValue(log.UserAgentFamily)));
+            logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.UserAgentOS),new ScalarValue(log.UserAgentOS)));
 
+            
             foreach (var ignoredField in options.IgnoredRequestLogFields.ToArray())
             {
                 logEvent.RemovePropertyIfPresent(ignoredField);

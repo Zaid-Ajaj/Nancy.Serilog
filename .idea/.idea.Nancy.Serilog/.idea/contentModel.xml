@@ -41,6 +41,7 @@
       <e p="SelfhostedSample" t="IncludeRecursive">
         <e p="App.config" t="Include" />
         <e p="Bootstrapper.cs" t="Include" />
+        <e p="FilesModule.cs" t="Include" />
         <e p="HomeModule.cs" t="Include" />
         <e p="Program.cs" t="Include" />
         <e p="Properties" t="Include">

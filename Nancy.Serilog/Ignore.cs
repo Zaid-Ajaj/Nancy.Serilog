@@ -25,6 +25,32 @@ namespace Nancy.Serilog
             ignoredFields.Add(name);
             return this;
         }
+        
+        public FieldChooser<T> Field<TProp>(Expression<Func<T, TProp>> action, bool condition)
+        {
+            var expression = (MemberExpression)action.Body;
+            string name = expression.Member.Name;
+            
+            if (condition)
+            {
+                ignoredFields.Add(name);
+            }
+            
+            return this;
+        }
+        
+        public FieldChooser<T> Field<TProp>(Expression<Func<T, TProp>> action, Func<string, bool> pred)
+        {
+            var expression = (MemberExpression)action.Body;
+            string name = expression.Member.Name;
+            
+            if (pred(name))
+            {
+                ignoredFields.Add(name);
+            }
+            
+            return this;
+        }
 
         public string[] ToArray() => ignoredFields.ToArray();
     }
