@@ -11,13 +11,16 @@ namespace Nancy.Serilog
     {
         public static string ReadBodyContent(this RequestStream inputStream)
         {
+            var content = "";
             using (var streamReader = new StreamReader(inputStream))
             {
-                var content = streamReader.ReadToEnd();
+                content = streamReader.ReadToEnd();
                 // rewind stream to make it readable again from a Nancy module
-                inputStream.Position = 0;
-                return content;
+                streamReader.DiscardBufferedData();
+                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
             }
+
+            return content;
         }
 
         public static Dictionary<string, string> ReadRequestHeaders(this RequestHeaders headers)
@@ -83,7 +86,13 @@ namespace Nancy.Serilog
             
             if (!ignoredFields.Contains(nameof(request.RequestBodyContent)))
             {
-                request.RequestBodyContent = nancyRequest.Body.ReadBodyContent();
+                request.RequestBodyContent = "";
+                
+                if (!nancyRequest.Files.Any())
+                {
+                    // Only read request body content when there aren't any files
+                    request.RequestBodyContent = nancyRequest.Body.ReadBodyContent();
+                }
             }
             
             if (!ignoredFields.Contains(nameof(request.RequestHeaders)))

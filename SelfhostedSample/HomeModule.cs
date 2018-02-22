@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Nancy.Cookies;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Nancy.Responses;
 using Serilog;
 
@@ -35,6 +36,17 @@ namespace SelfhostedSample
                     .WithCookie(new NancyCookie("special-cookie", "cookie value", DateTime.Now.AddHours(1)))
                     .WithModel($"Hello {user}");
             };
+
+            Post["/echo"] = args =>
+            {
+                var inputStream = Context.Request.Body;
+                using (var reader = new StreamReader(inputStream))
+                {
+                    var content = reader.ReadToEnd();
+                    return content;
+                }
+            };
+            
         }
     }
 }

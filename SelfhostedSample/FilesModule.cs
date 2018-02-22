@@ -25,11 +25,13 @@ namespace SelfhostedSample
                 var file = Request.Files.FirstOrDefault();
 
                 if (file == null) return Response.AsText("No file provided");
+
+                var contentType = Request.Headers.ContentType;
                 
                 using (var reader = new StreamReader(file.Value))
                 {
                     var fileContent = reader.ReadToEnd();
-                    return Response.AsText($"File Contents: \n{fileContent}");
+                    return Response.AsText($"File {contentType}: \n{fileContent}");
                 }
             };
         }
