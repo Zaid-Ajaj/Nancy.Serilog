@@ -28,22 +28,14 @@ namespace SelfhostedSample
             Post["/sync"] = x =>
             {
                 var file = Request.Files.FirstOrDefault();
+
+                if (file == null) return Response.AsText("No file provided");
                 
-                try
+                using (var reader = new StreamReader(file.Value))
                 {
-                    using (var reader = new StreamReader(file.Value))
-                    {
-                        var fileContent = reader.ReadToEnd();
-                        return Response.AsText($"File Contents: \n{fileContent}");
-                    }
+                    var fileContent = reader.ReadToEnd();
+                    return Response.AsText($"File Contents: \n{fileContent}");
                 }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Error: ");
-                    throw;
-                }
-                
-                return Response.AsText("ok");
             };
         }
     }
