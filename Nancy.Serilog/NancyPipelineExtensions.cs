@@ -58,7 +58,7 @@ namespace Nancy.Serilog
             errorLogData.Method = context.Request.Method;
             errorLogData.ResolvedRouteParameters = NancyContextExtensions.ReadDynamicDictionary(context.Parameters);
             var logger = Log.ForContext(new ErrorLogEnricher(errorLogData, options)); 
-            logger.Error(ex, "Server Error");
+            logger.Error(ex, "Server Error at {Method} {Path}", errorLogData.Method, errorLogData.RequestedPath);
             return null;
         }
 
@@ -72,11 +72,6 @@ namespace Nancy.Serilog
             var logger = Log.ForContext(new RequestLogEnricher(requestLogData, options));
             logger.Information("Request {Method} {Path}", requestLogData.Method, requestLogData.Path);
             return null;
-        }
-
-        static string TrimAt(this string input, int n)
-        {
-            return new string(input.Take(n).ToArray());
         }
 
         static void AfterPipelineHook(NancyContext context)
