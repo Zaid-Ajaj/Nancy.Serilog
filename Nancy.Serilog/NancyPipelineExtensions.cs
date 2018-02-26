@@ -70,7 +70,7 @@ namespace Nancy.Serilog
             context.Items.Add("Stopwatch", stopwatch);
             context.Items.Add("RequestId", requestLogData.RequestId);
             var logger = Log.ForContext(new RequestLogEnricher(requestLogData, options));
-            logger.Information($"Request {requestLogData.Method} {requestLogData.Path.TrimAt(40)}");
+            logger.Information("Request {Method} {Path}", requestLogData.Method, requestLogData.Path);
             return null;
         }
 
@@ -89,7 +89,7 @@ namespace Nancy.Serilog
             var responseLogData = context.ReadResponseProperties(options);
             var method = context.Request.Method;
             var logger = Log.ForContext(new ResponseLogEnricher(responseLogData, options));
-            logger.Information($"Response {method} {responseLogData.RequestedPath.TrimAt(40)}");
+            logger.Information("Response {Method} {Path} took {Duration}", method, responseLogData.RequestedPath, responseLogData.Duration);
         }
     }
 }
