@@ -3,6 +3,7 @@ using Nancy;
 using Nancy.TinyIoc;
 using Nancy.Bootstrapper;
 using Nancy.Serilog;
+using Serilog;
 
 namespace SelfhostedSample
 {
@@ -12,6 +13,12 @@ namespace SelfhostedSample
         {
             pipelines.EnableSerilog();
             StaticConfiguration.DisableErrorTraces = false;
+        }
+
+        protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
+        {
+            container.Register<IThirdParty, ThirdParty>();
+            container.Register((tinyIoc, namedParams) => context.GetContextualLogger());
         }
     }
 }

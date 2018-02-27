@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Serilog;
 
 namespace Nancy.Serilog
 {
@@ -23,6 +24,22 @@ namespace Nancy.Serilog
             return content;
         }
 
+        /// <summary>
+        /// Returns a logger with the RequestId information attached to it from the NancyContext
+        /// </summary>
+        /// <param name="context"></param>
+        public static ILogger GetContextualLogger(this NancyContext context)
+        {
+            if(!context.Items.ContainsKey("RequestId"))
+            {
+                return Log.Logger;
+            }
+                
+            var requestId = (string)context.Items["RequestId"];
+            var contextualLogger = Log.ForContext("RequestId", requestId);
+            return contextualLogger;
+        }
+
         public static Dictionary<string, string> ReadRequestHeaders(this RequestHeaders headers)
         {
             var dict = new Dictionary<string, string>();
@@ -33,6 +50,8 @@ namespace Nancy.Serilog
 
             return dict;
         }
+        
+        
 
         public static Dictionary<string, string> ReadDynamicDictionary(dynamic query)
         {

@@ -7,23 +7,43 @@ using System.Threading;
 using Nancy.Cookies;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using Nancy.Responses;
 using Serilog;
 
 namespace SelfhostedSample
-{    
+{
+    public interface IThirdParty
+    {
+        void DoSomething();
+    }
+
+    public class ThirdParty : IThirdParty
+    {
+        private readonly ILogger logger;
+        public ThirdParty(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
+        public void DoSomething()
+        {
+            logger.Information("Do something is about to do something");
+        }
+    }
+    
     public class HomeModule : NancyModule
     {
-        public HomeModule()
+        public HomeModule(IThirdParty thirdParty, ILogger logger)
         {
             Get["/"] = args => 
-            {
+            { 
+                thirdParty.DoSomething();
                 return $"{Thread.CurrentThread.ManagedThreadId}";
             };
 
             Post["/hello/{user}"] = args =>
             {
-                var logger = this.CreateLogger();
                 var user = (string)args.user;
                 if (user == "error")
                 {

@@ -44,20 +44,39 @@ Without doing any extra configuration, navigating to `/` (root) will be logged: 
 
 
 ## Log Correlation
- Notice how the two logs are correlated with the same `RequestId` property. This property is attached to requests and responses so that you can find logs coming from a single roundtrip. When you write custom log messages, you want to include this `RequestId` property to your custom logs so that these too will be correlated to the same requests and responses. To do that, you want to use a logger that is *bound* to the request context: Nancy.Serilog provides an extension method called `CreateLogger()` you can call from your `NancyModule` as in the following snippet. The `ILogger` you get back has the `RequestId` attached to it. 
+ Notice how the two logs are correlated with the same `RequestId` property. This property is attached to requests and responses so that you can find logs coming from a single roundtrip. When you write custom log messages, you want to include this `RequestId` property to your custom logs so that these too will be correlated to the same requests and responses. To do that, you want to use a logger that is *bound* to the request context: Nancy.Serilog provides an extension method called `GetContexualLogger()` you can register as the request container level from your `Bootstrapper` as in the following snippet.
 
-```cs
+```csharp
 public class Users : NancyModule
 {
-    public Users()
+    // have ILogger as a dependency
+    public Users(ILogger logger)
     {
         Post["/hello/{user}"] = args =>
         {
-            var logger = this.CreateLogger();
             var user = (string)args.user;
             logger.Information("{User} Logged In", user);
             return $"Hello {user}";
         };
+    }
+}
+
+public class Bootstrapper : DefaultNancyBootstrapper
+{
+    protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+    {
+        pipelines.EnableSerilog();
+        StaticConfiguration.DisableErrorTraces = false;
+    }
+    
+   
+    protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
+    {
+        // Register request based dependency
+        container.Register((tinyIoc, namedParams) => context.GetContextualLogger());
+        
+        // other dependencies using ILogger should be registered here as well
+        container.Register<IThirdPartyService, ThirdPartyService>(); 
     }
 }
 ```
