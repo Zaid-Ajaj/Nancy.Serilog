@@ -2,8 +2,6 @@
 
 [Nancy](https://github.com/NancyFx/Nancy) plugin for application-wide logging using the [Serilog](https://github.com/serilog/serilog) logging framework.
 
-> This library is still experiemental
-
 ## Getting Started
 Install it from Nuget:
 ```
@@ -17,15 +15,26 @@ class CustomBootstrapper : DefaultNancyBootstrapper
 {
     protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
     {
-        
         pipelines.EnableSerilog();
 
         // Configure logger to output json-formatted logs to the console
+        // or use the sink of your choice 
         Log.Logger = new LoggerConfiguration()
            .MinimumLevel.Information()
            .WriteTo.Console(new JsonFormatter())
            .CreateLogger()
     }
+    
+    protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
+    {
+        // Register request based dependency
+        container.Register((tinyIoc, namedParams) => context.GetContextualLogger());
+        
+        // other dependencies using ILogger should be registered here as well
+        container.Register<IThirdPartyService, ThirdPartyService>(); 
+    }
+    
+    
 }
 ```
 Now data from your requests will be logged when receiving requests and when returing responses:
@@ -69,7 +78,6 @@ public class Bootstrapper : DefaultNancyBootstrapper
         StaticConfiguration.DisableErrorTraces = false;
     }
     
-   
     protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
     {
         // Register request based dependency

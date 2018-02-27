@@ -51,8 +51,6 @@ namespace Nancy.Serilog
             return dict;
         }
         
-        
-
         public static Dictionary<string, string> ReadDynamicDictionary(dynamic query)
         {
             if (query == null) return new Dictionary<string, string>();
