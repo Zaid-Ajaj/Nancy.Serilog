@@ -17,6 +17,7 @@ namespace SelfhostedSample
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
         {
+            container.Register<IOtherThirdParty, OtherThirdParty>();
             container.Register<IThirdParty, ThirdParty>();
             container.Register((tinyIoc, namedParams) => context.GetContextualLogger());
         }

@@ -18,17 +18,41 @@ namespace SelfhostedSample
         void DoSomething();
     }
 
-    public class ThirdParty : IThirdParty
+    public interface IOtherThirdParty
+    {
+        void Execute();
+    }
+    public class OtherThirdParty : IOtherThirdParty
     {
         private readonly ILogger logger;
-        public ThirdParty(ILogger logger)
+
+        public OtherThirdParty(ILogger logger)
         {
             this.logger = logger;
+        }
+        
+        public void Execute()
+        {
+            logger.Information("Other third party: Execute()");
+        }
+    }
+    
+    
+    public class ThirdParty : IThirdParty
+    {
+        private readonly IOtherThirdParty otherThirdParty;
+        private readonly ILogger logger; 
+        
+        public ThirdParty(IOtherThirdParty otherThirdParty, ILogger logger)
+        {
+            this.logger = logger;
+            this.otherThirdParty = otherThirdParty;
         }
 
         public void DoSomething()
         {
-            logger.Information("Do something is about to do something");
+            logger.Information("Third party: DoSomething()");
+            otherThirdParty.Execute();
         }
     }
     
@@ -66,7 +90,6 @@ namespace SelfhostedSample
                     return content;
                 }
             };
-            
         }
     }
 }
