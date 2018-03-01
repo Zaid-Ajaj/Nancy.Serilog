@@ -1,4 +1,5 @@
-﻿using Serilog.Core;
+﻿using System.Linq;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace Nancy.Serilog
@@ -19,8 +20,13 @@ namespace Nancy.Serilog
          
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
+            var ignoredFields = options.IgnoredResponseLogFields.ToArray();
             var log = response;
+            
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.RequestId), new ScalarValue(log.RequestId)));
+            
+            
+            
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.StatusCode), new ScalarValue(log.StatusCode)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResponseContentType), new ScalarValue(log.ResponseContentType)));
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.Duration), new ScalarValue(log.Duration)));
@@ -36,7 +42,7 @@ namespace Nancy.Serilog
             logEvent.AddOrUpdateProperty(new LogEventProperty(nameof(log.ResolvedRouteParameters), EnricherProps.FromDictionary(log.ResolvedRouteParameters)));
 
 
-            foreach(var ignoredField in options.IgnoredResponseLogFields.ToArray())
+            foreach(var ignoredField in ignoredFields)
             {
                 logEvent.RemovePropertyIfPresent(ignoredField);
             }

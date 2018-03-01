@@ -22,7 +22,6 @@ namespace SelfhostedSample
                 .Enrich.WithDemystifiedStackTraces()
                 .Enrich.WithThreadId()
                 .Enrich.WithProperty("ApplicationId", "SelfhostedTestApp")
-                .WriteTo.Console()
                 .WriteTo.Console(new JsonFormatter())
                 .CreateLogger();
 

@@ -22,7 +22,12 @@ namespace Nancy.Serilog
         {
             var expression = (MemberExpression)action.Body;
             string name = expression.Member.Name;
-            ignoredFields.Add(name);
+            
+            if (name != "RequestId")
+            {
+                ignoredFields.Add(name);
+            }
+            
             return this;
         }
         
@@ -31,7 +36,7 @@ namespace Nancy.Serilog
             var expression = (MemberExpression)action.Body;
             string name = expression.Member.Name;
             
-            if (condition)
+            if (condition && name != "RequestId")
             {
                 ignoredFields.Add(name);
             }
@@ -44,7 +49,7 @@ namespace Nancy.Serilog
             var expression = (MemberExpression)action.Body;
             string name = expression.Member.Name;
             
-            if (pred(name))
+            if (pred(name) && name != "RequestId")
             {
                 ignoredFields.Add(name);
             }
