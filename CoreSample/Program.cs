@@ -2,7 +2,6 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-
 namespace CoreSample
 {
     class Program
@@ -13,6 +12,7 @@ namespace CoreSample
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .UseKestrel()
+                .UseUrls("http://localhost:8080")
                 .Build();
 
             host.Run();

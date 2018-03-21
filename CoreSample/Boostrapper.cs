@@ -24,6 +24,11 @@ namespace CoreSample
                 .CreateLogger();
         }
         
+        protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
+        {
+            container.Register((tinyIoc, namedParams) => context.GetContextualLogger());
+        }
+
         public override void Configure(Nancy.Configuration.INancyEnvironment environment)
         {
             environment.Tracing(enabled: false, displayErrorTraces: true);
