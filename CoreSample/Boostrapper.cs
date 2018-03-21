@@ -28,5 +28,20 @@ namespace CoreSample
         {
             environment.Tracing(enabled: false, displayErrorTraces: true);
         }
+
+        // Reads nancy module information from the assembly
+        protected override IEnumerable<ModuleRegistration> Modules
+        {
+            get
+            {
+                return 
+                    this.GetType()
+                    .Assembly
+                    .GetTypes()
+                    .Where(type => type.IsSubclassOf(typeof(NancyModule)))
+                    .Select(module => new ModuleRegistration(module))
+                    .ToList();
+            }
+        }
     }
 }
