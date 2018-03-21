@@ -58,7 +58,7 @@ namespace Nancy.Serilog
 
             var dict = new Dictionary<string, string>();
             
-            IDictionary<string, string> queryDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(query));
+            IDictionary<string, string> queryDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(query.ToDictionary()));
             
             foreach (var key in queryDict.Keys)
             {
