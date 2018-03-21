@@ -2,10 +2,20 @@
 
 [Nancy](https://github.com/NancyFx/Nancy) plugin for application-wide logging using the [Serilog](https://github.com/serilog/serilog) logging framework.
 
+## Available Packages:
+
+| Package | Nancy  | Version |
+| --------- | ------------- | ------------- |
+| Nancy.Serilog | 1.4.x (Classic .NET)  | [![Nuget](https://img.shields.io/nuget/v/Nancy.Serilog.svg?colorB=green)](https://www.nuget.org/packages/Nancy.Serilog) |
+| Nancy.Serilog.Core | 2.0-clinteastwood  | [![Nuget](https://img.shields.io/nuget/v/Nancy.Serilog.Core.svg?colorB=green)](https://www.nuget.org/packages/Nancy.Serilog.Core)  |
+
 ## Getting Started
 Install it from Nuget:
-```
-Install-Package Nancy.Serilog
+```bash
+# classic .NET (4.5+)
+Install-Package Nancy.Serilog 
+# Dotnet core
+dotnet add package Nancy.Serilog.Core
 ```
 Enable logging from your Bootstrapper at `ApplicationStartup`, this block is a good place to configure the actual logger. 
 ```cs
