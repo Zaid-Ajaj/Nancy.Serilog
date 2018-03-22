@@ -7,8 +7,8 @@ namespace Nancy.Serilog
     public class ResponseLogEnricher : ILogEventEnricher
     {
         private ResponseLogData response;
-        private Options options;
-        public ResponseLogEnricher(ResponseLogData response, Options options)
+        private NancySerilogOptions options;
+        public ResponseLogEnricher(ResponseLogData response, NancySerilogOptions options)
         {
             this.response = response;
             this.options = options;

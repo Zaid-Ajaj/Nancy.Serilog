@@ -13,7 +13,7 @@ namespace Nancy.Serilog
     {
         private static bool serilogEnabled = false;
 
-        private static Options options = new Options();
+        private static NancySerilogOptions options = new NancySerilogOptions();
 
         public static void EnableSerilog(this IPipelines pipelines)
         {
@@ -26,7 +26,7 @@ namespace Nancy.Serilog
             serilogEnabled = true;
         }
 
-        public static void EnableSerilog(this IPipelines pipelines, Options options)
+        public static void EnableSerilog(this IPipelines pipelines, NancySerilogOptions options)
         {
             if (serilogEnabled) return;
 

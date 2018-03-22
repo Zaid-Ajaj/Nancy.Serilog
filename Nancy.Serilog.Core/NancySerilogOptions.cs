@@ -1,6 +1,6 @@
 ﻿namespace Nancy.Serilog
 {
-    public class Options
+    public class NancySerilogOptions
     {
         public FieldChooser<RequestLogData> IgnoredRequestLogFields { get; set; } = new FieldChooser<RequestLogData>();
         public FieldChooser<ErrorLogData>  IgnoreErrorLogFields { get; set; } = new FieldChooser<ErrorLogData>();

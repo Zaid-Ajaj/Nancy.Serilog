@@ -6,9 +6,9 @@ namespace Nancy.Serilog
     public class RequestLogEnricher : ILogEventEnricher
     {
         private RequestLogData request;
-        private Options options;
+        private NancySerilogOptions options;
 
-        public RequestLogEnricher(RequestLogData request, Options options)
+        public RequestLogEnricher(RequestLogData request, NancySerilogOptions options)
         {
             this.request = request;
             this.options = options;

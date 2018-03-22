@@ -110,7 +110,7 @@ Nancy.Serilog will try to retrieve all the information it can get from requests,
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
-            pipelines.EnableSerilog(new Options
+            pipelines.EnableSerilog(new NancySerilogOptions
             {
                 IgnoredResponseLogFields = 
                     Ignore.FromResponse()

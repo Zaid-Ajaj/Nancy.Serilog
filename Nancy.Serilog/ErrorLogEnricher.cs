@@ -8,9 +8,9 @@ namespace Nancy.Serilog
     public class ErrorLogEnricher : ILogEventEnricher
     {
         private ErrorLogData errorLog;
-        private Options options; 
+        private NancySerilogOptions options; 
 
-        public ErrorLogEnricher(ErrorLogData errorLog, Options options)
+        public ErrorLogEnricher(ErrorLogData errorLog, NancySerilogOptions options)
         {
             this.errorLog = errorLog;
             this.options = options;

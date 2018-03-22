@@ -68,7 +68,7 @@ namespace Nancy.Serilog
             return dict; 
         }
 
-        public static RequestLogData ReadRequestProperties(this NancyContext context, Options opts)
+        public static RequestLogData ReadRequestProperties(this NancyContext context, NancySerilogOptions opts)
         {
             var nancyRequest = context.Request;
             var request = new RequestLogData();
@@ -182,7 +182,7 @@ namespace Nancy.Serilog
         }
 
 
-        public static ResponseLogData ReadResponseProperties(this NancyContext context, Options options)
+        public static ResponseLogData ReadResponseProperties(this NancyContext context, NancySerilogOptions options)
         {
             var ignoredFields = options.IgnoredResponseLogFields.ToArray();
             

@@ -59,7 +59,7 @@
     <Compile Include="NancyContextExtensions.cs" />
     <Compile Include="NancyModuleExtensions.cs" />
     <Compile Include="NancyPipelineExtensions.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="NancySerilogOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestLogData.cs" />
     <Compile Include="RequestLogEnricher.cs" />

@@ -12,6 +12,7 @@ namespace SelfhostedSample
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             pipelines.EnableSerilog();
+
             StaticConfiguration.DisableErrorTraces = false;
         }
 
