@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Nancy plugin for application-wide logging using Serilog</Description>
+    <PackageProjectUrl>https://github.com/Zaid-Ajaj/Nancy.Serilog</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Zaid-Ajaj/Nancy.Serilog.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Nancy.Serilog/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags>nancy;serilog;logging</PackageTags>
+    <Authors>Zaid Ajaj</Authors>
+    <Version>2.0.0</Version>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nancy" Version="2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="UAParser" Version="3.0.0" />
+  </ItemGroup>
+
+</Project>

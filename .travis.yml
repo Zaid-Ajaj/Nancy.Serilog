@@ -3,6 +3,4 @@ mono: 5.2.0
 dotnet: 2.0.0
 dist: trusty
 script:
- - cd Nancy.Serilog.Core.Tests
- - dotnet restore
- - dotnet run
+ - ./build.sh --target Test
