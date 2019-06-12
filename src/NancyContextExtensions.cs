@@ -13,16 +13,13 @@ namespace Nancy.Serilog
     {
         public static string ReadBodyContent(this Stream inputStream)
         {
-            var content = "";
-            using (var streamReader = new StreamReader(inputStream))
+            using (var memoryStream = new MemoryStream())
             {
-                content = streamReader.ReadToEnd();
-                // rewind stream to make it readable again from a Nancy module
-                streamReader.DiscardBufferedData();
-                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
+                inputStream.CopyTo(memoryStream);
+                var streamBodyBytes = memoryStream.ToArray();
+                inputStream.Position = 0;
+                return System.Text.Encoding.UTF8.GetString(streamBodyBytes);
             }
-
-            return content;
         }
 
         /// <summary>
@@ -35,7 +32,7 @@ namespace Nancy.Serilog
             {
                 return Log.Logger;
             }
-                
+
             var requestId = (string)context.Items["RequestId"];
             var contextualLogger = Log.ForContext("RequestId", requestId);
             return contextualLogger;
@@ -51,21 +48,21 @@ namespace Nancy.Serilog
 
             return dict;
         }
-        
+
         public static Dictionary<string, string> ReadDynamicDictionary(dynamic query)
         {
             if (query == null) return new Dictionary<string, string>();
 
             var dict = new Dictionary<string, string>();
-            
+
             IDictionary<string, string> queryDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(query.ToDictionary()));
-            
+
             foreach (var key in queryDict.Keys)
             {
-                dict.Add(key, string.Join(", ", query[key])); 
+                dict.Add(key, string.Join(", ", query[key]));
             }
 
-            return dict; 
+            return dict;
         }
 
         public static RequestLogData ReadRequestProperties(this NancyContext context, NancySerilogOptions opts)
@@ -83,12 +80,12 @@ namespace Nancy.Serilog
             {
                 request.Method = nancyRequest.Method;
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.Path)))
             {
                 request.Path = nancyRequest.Url.Path;
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.QueryString)))
             {
                 request.QueryString = nancyRequest.Url.Query;
@@ -98,7 +95,7 @@ namespace Nancy.Serilog
             {
                 request.RequestContentLength = nancyRequest.Headers.ContentLength;
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.RequestContentType)))
             {
                 if (nancyRequest.Headers != null && nancyRequest.Headers.ContentType != null)
@@ -110,18 +107,18 @@ namespace Nancy.Serilog
                     request.RequestContentType = "";
                 }
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.RequestBodyContent)))
             {
                 request.RequestBodyContent = "";
-                
+
                 if (!nancyRequest.Files.Any())
                 {
                     // Only read request body content when there aren't any files
                     request.RequestBodyContent = nancyRequest.Body.ReadBodyContent();
                 }
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.RequestHeaders)))
             {
                 request.RequestHeaders = nancyRequest.Headers.ReadRequestHeaders();
@@ -156,12 +153,12 @@ namespace Nancy.Serilog
                 request.UserAgentDevice = "Other";
                 request.UserAgentOS = "Other";
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.UserIPAddress)))
             {
                 request.UserIPAddress = nancyRequest.UserHostAddress;
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.Query)))
             {
                 if (nancyRequest.Query != null)
@@ -169,12 +166,12 @@ namespace Nancy.Serilog
                     request.Query = ReadDynamicDictionary(nancyRequest.Query);
                 }
             }
-            
+
             if (!ignoredFields.Contains(nameof(request.Query)))
             {
                 request.RequestCookies = new Dictionary<string, string>(nancyRequest.Cookies);
             }
-            
+
             return request;
         }
 
@@ -182,7 +179,7 @@ namespace Nancy.Serilog
         public static ResponseLogData ReadResponseProperties(this NancyContext context, NancySerilogOptions options)
         {
             var ignoredFields = options.IgnoredResponseLogFields.ToArray();
-            
+
             var responseLogData = new ResponseLogData();
             var stopwatch = (Stopwatch)context.Items["Stopwatch"];
             stopwatch.Stop();
@@ -207,7 +204,7 @@ namespace Nancy.Serilog
                     Name = cookie.Name,
                     Value = cookie.Value
                 });
-                
+
                 responseLogData.RawResponseCookies = rawCookies.ToArray();
             }
 
@@ -216,15 +213,15 @@ namespace Nancy.Serilog
                 // Add cookies as key-valued dict, easier to index on documents
                 // for example if you are using Elasticseach
                 var cookieDict = new Dictionary<string, string>();
-                
-                foreach(var cookie in context.Response.Cookies) 
+
+                foreach(var cookie in context.Response.Cookies)
                 {
                     cookieDict.Add(cookie.Name, cookie.Value);
                 }
 
                 responseLogData.ResponseCookies = cookieDict;
             }
-            
+
 
             if (!ignoredFields.Contains(nameof(responseLogData.ResponseContent)))
             {
@@ -232,8 +229,6 @@ namespace Nancy.Serilog
                 using (var memoryStream = new MemoryStream())
                 {
                     context.Response.Contents(memoryStream);
-                    memoryStream.Flush();
-                    memoryStream.Position = 0;
                     responseLogData.ResponseContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     responseLogData.ResponseContentLength = responseLogData.ResponseContent.Length;
                 }

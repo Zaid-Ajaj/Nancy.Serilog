@@ -11,20 +11,21 @@ namespace Example
         public Home(ILogger logger)
         {
             Get("/", args => "Hello From Home");
-            
-            Get("/other", args => 
+
+            Get("/other", args =>
             {
                 logger.Information("Logging from /other");
                 return "Hello from other";
             });
 
-            Get("/index", async args => 
+            Get("/index", async args =>
             {
                 await Task.Delay(500);
                 return Response.AsText("<h1>Hello from Nancy</h1>", "text/html", Encoding.UTF8);
             });
 
-            Post("/echo", async args => {
+            Post("/echo", async args =>
+            {
                 await Task.Delay(1000);
                 using (var reader = new StreamReader(this.Request.Body))
                 {
